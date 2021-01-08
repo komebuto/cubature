@@ -32,6 +32,10 @@
 #include <stdlib.h> /* for size_t */
 
 #ifdef __cplusplus
+#include <functional> /* for std::function */
+#endif
+
+#ifdef __cplusplus
 extern "C"
 {
 #endif /* __cplusplus */
@@ -45,16 +49,27 @@ extern "C"
    to pass any additional data through to your function (it corresponds
    to the fdata parameter you pass to cubature).  Return 0 on
    success or nonzero to terminate the integration. */
+#ifndef __cplusplus
 typedef int (*integrand) (unsigned ndim, const double *x, void *,
                           unsigned fdim, double *fval);
+#else
+using integrand = std::function<int(unsigned ndim, const double *x, void *,
+				                        unsigned fdim, double *fval)>;
+#endif /* __cplusplus */
 
 /* a vector integrand of a vector of npt points: x[i*ndim + j] is the
    j-th coordinate of the i-th point, and the k-th function evaluation
    for the i-th point is returned in fval[i*fdim + k].  Return 0 on success
    or nonzero to terminate the integration. */
+#ifndef __cplusplus
 typedef int (*integrand_v) (unsigned ndim, size_t npt,
 			    const double *x, void *,
 			    unsigned fdim, double *fval);
+#else
+using integrand_v = std::function<int(unsigned ndim, size_t npt,
+				                        const double *x, void *,
+				                        unsigned fdim, double *fval)>;
+#endif /* __cplusplus */
 
 /* Different ways of measuring the absolute and relative error when
    we have multiple integrands, given a vector e of error estimates
